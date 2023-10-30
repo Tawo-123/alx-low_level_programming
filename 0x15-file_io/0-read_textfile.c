@@ -1,46 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
 
-ssize_t read_textfile(const char *filename, size_t letters)
+void read_textfile(const char *filename, size_t letters)
 {
-    int fd;
-    ssize_t n_read, n_written;
     char *buf;
-
-    if (filename == NULL)
-        return (0);
-
-    buf = malloc(sizeof(char) * letters);
-    if (buf == NULL)
-        return (0);
+    ssize_t fd;
+    ssize_t w;
+    ssize_t t;
 
     fd = open(filename, O_RDONLY);
     if (fd == -1)
-    {
-        free(buf);
-        return (0);
-    }
-
-    n_read = read(fd, buf, letters);
-    if (n_read == -1)
-    {
-        free(buf);
-        close(fd);
-        return (0);
-    }
-
-    n_written = write(STDOUT_FILENO, buf, n_read);
-    if (n_written == -1 || n_written != n_read)
-    {
-        free(buf);
-        close(fd);
-        return (0);
-    }
+        return;
+    buf = malloc(sizeof(char) * letters);
+    t = read(fd, buf, letters);
+    w = write(STDOUT_FILENO, buf, t);
 
     free(buf);
     close(fd);
+}
 
-    return (n_written);
+int main(void)
+{
+    read_textfile("filename.txt", 1024);
+    return (0);
 }
